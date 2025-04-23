@@ -1,0 +1,44 @@
+name: gitlab-deploy-pags
+
+# Controls when the action will run.
+on:
+    # Triggers the workflow on push or pull request events but only for the master branch
+    push:
+        branches: [main]
+
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        # env:
+        #     VITE_OPENAI_API_KEY: ${{ secrets.VITE_OPENAI_API_KEY }}
+        #     VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        #     VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        steps:
+            - name: Checkout ⏬
+              uses: actions/checkout@v4
+
+            - name: Install 🔧
+              run: cd hire-react && npm install
+
+            - name: Build 🔥
+              run: npm run build
+
+            - name: Setup Pages ⚙
+              uses: actions/configure-pages@v4
+
+            - name: Upload artifact 🔼
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: "./dist"
+
+            - name: Deploy to GitHub Pages 🚀
+              id: deployment
+              uses: actions/deploy-pages@v4

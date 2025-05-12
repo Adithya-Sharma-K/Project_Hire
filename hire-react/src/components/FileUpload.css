@@ -1,109 +1,122 @@
-.file-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .file-name {
-    font-weight: 500;
-    color: #374151;
-  }
-  
-  .file-size {
-    font-size: 0.85em;
-    color: #6b7280;
-  }
 /* src/components/FileUpload.css */
+
 .file-upload-container {
-    position: relative;
-    margin-bottom: 25px;
-    border: 2px dashed #d1d5db; /* Softer border color */
-    border-radius: 10px; /* More rounded corners */
-    padding: 30px; /* Increased padding for spaciousness */
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.3s ease, background-color 0.3s ease;
-    background-color: #f9fafb; /* Light background */
-  }
-  
-  .file-upload-container.drag-over {
-    border-color: #6366f1; /* More vibrant drag-over color */
-    background-color: #edf2ff; /* Light background when dragging */
-  }
-  
-  .drag-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.7); /* Slightly transparent overlay */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    font-size: 1.1em;
-    color: #4b5563; /* Darker text color */
-    z-index: 10;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-    pointer-events: none;
-  }
-  
-  .file-upload-container.drag-over .drag-overlay {
-    opacity: 1;
-  }
-  
-  .file-upload-label {
-    display: block;
-    margin-bottom: 15px; /* More spacing */
-    font-weight: 500; /* Slightly lighter bold */
-    color: #374151; /* Darker label text */
-    cursor: pointer;
-    padding: 15px; /* Padding for the label area */
-    border-radius: 8px;
-    transition: background-color 0.2s ease;
-  }
-  
-  .file-upload-label:hover {
-    background-color: #f3f4f6; /* Subtle hover feedback */
-  }
-  
-  .file-icon {
-    margin-right: 10px;
-    font-size: 1.2em;
-    color: #6b7280; /* Muted icon color */
-  }
-  
-  .file-input {
-    display: none;
-  }
-  
-  .file-details {
-    display: flex;
-    align-items: center;
-    margin-top: 15px;
-    padding: 12px 15px;
-    background-color: #e5e7eb; /* Light gray background */
-    border-radius: 6px;
-    color: #4b5563;
-    font-size: 0.95em;
-    justify-content: center;
-  }
-  
-  .file-type-icon {
-    margin-right: 10px;
-    font-size: 1.1em;
-  }
-  
-  .file-type-icon.pdf {
-    color: #ef4444; /* More vibrant red */
-  }
-  
-  .file-type-icon.docx {
-    color: #3b82f6; /* More vibrant blue */
-  }
-  
-  .file-type-icon.txt {
-    color: #10b981; /* More vibrant green */
-  }
+  position: relative;
+  margin-bottom: 25px;
+  border: 2px dashed #d1d5db;
+  border-radius: 10px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  background-color: #f9fafb;
+}
+
+.file-upload-container.drag-over {
+  border-color: #6366f1;
+  background-color: #edf2ff;
+}
+
+.drag-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  font-size: 1.1em;
+  color: #4b5563;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+.file-upload-container.drag-over .drag-overlay {
+  opacity: 1;
+}
+
+.file-upload-label {
+  display: block;
+  margin-bottom: 15px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.file-upload-label:hover {
+  background-color: #f3f4f6;
+}
+
+.file-icon {
+  margin-right: 10px;
+  font-size: 1.2em;
+  color: #6b7280;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-details {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+  padding: 12px 15px;
+  background-color: #e5e7eb;
+  border-radius: 6px;
+  color: #4b5563;
+  font-size: 0.95em;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.file-type-icon {
+  font-size: 1.4em;
+}
+
+.file-type-icon.pdf {
+  color: #ef4444;
+}
+
+.file-type-icon.docx {
+  color: #3b82f6;
+}
+
+.file-type-icon.txt {
+  color: #10b981;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.file-name {
+  font-weight: 500;
+  color: #374151;
+}
+
+.file-size {
+  font-size: 0.85em;
+  color: #6b7280;
+}
+.file-remove-button {
+  margin-left: auto;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s ease;
+}

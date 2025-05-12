@@ -1,73 +1,45 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import './App.css'
-
-// function App() {
-//   const [count, setCount] = useState(0)
-
-//   return (
-//     <>
-//       <div>
-//         <a href="https://vite.dev" target="_blank">
-//           <img src={viteLogo} className="logo" alt="Vite logo" />
-//         </a>
-//         <a href="https://react.dev" target="_blank">
-//           <img src={reactLogo} className="logo react" alt="React logo" />
-//         </a>
-//       </div>
-//       <h1>Vite + React</h1>
-//       <div className="card">
-//         <button onClick={() => setCount((count) => count + 1)}>
-//           count is {count}
-//         </button>
-//         <p>
-//           Edit <code>src/App.jsx</code> and save to test HMR
-//         </p>
-//       </div>
-//       <p className="read-the-docs">
-//         Click on the Vite and React logos to learn more
-//       </p>
-//     </>
-//   )
-// }
-
-// export default App
-
-
 import React, { useState } from 'react';
 import './App.css';
 import { FaCloudUploadAlt, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import FileUpload from './components/FileUpload'; // Import the FileUpload component
+import FileUpload from './components/FileUpload';
 
 function App() {
+  // Common accepted formats
+  const acceptedFormats = [
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'text/plain',
+  ];
+
   const [resumeFile, setResumeFile] = useState(null);
   const [jdFile, setJdFile] = useState(null);
   const [jdText, setJdText] = useState('');
   const [uploadStatus, setUploadStatus] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-  const handleResumeChange = (file) => {
-    setResumeFile(file);
-  };
-
-  const handleJdFileChange = (file) => {
-    setJdFile(file);
-    setJdText(''); // Clear text if file is selected
+  const handleFileChange = (type, file) => {
+    if (type === 'resume') setResumeFile(file);
+    if (type === 'jd') {
+      setJdFile(file);
+      setJdText('');
+    }
   };
 
   const handleJdTextChange = (e) => {
     setJdText(e.target.value);
-    setJdFile(null); // Clear file if text is typed
+    setJdFile(null);
   };
 
-  const handleSubmit = async () => {
-    if (!resumeFile) {
-      alert("Please upload your resume.");
-      return;
-    }
+  const validateUpload = () => {
+    if (!resumeFile) return 'Please upload your resume.';
+    if (!jdFile && jdText.trim() === '') return 'Please provide a Job Description.';
+    return null;
+  };
 
-    if (!jdFile && jdText.trim() === '') {
-      alert("Please upload a Job Description file or enter the description.");
+  const handleSubmit = () => {
+    const errorMsg = validateUpload();
+    if (errorMsg) {
+      alert(errorMsg);
       return;
     }
 
@@ -75,43 +47,49 @@ function App() {
 
     const formData = new FormData();
     formData.append('resume', resumeFile);
+    jdFile
+      ? formData.append('jobDescriptionFile', jdFile)
+      : formData.append('jobDescriptionText', jdText);
 
-    if (jdFile) {
-      formData.append('jobDescriptionFile', jdFile);
-    } else {
-      formData.append('jobDescriptionText', jdText);
-    }
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://your-api.com/upload', true); // Replace with real URL
 
-    try {
-      const response = await fetch('https://your-api.com/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Upload failed:", errorData);
-        setUploadStatus('error');
-        alert(`Upload failed: ${errorData.message || 'An unexpected error occurred.'}`);
-        return;
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = Math.round((event.loaded / event.total) * 100);
+        setUploadProgress(percentComplete);
       }
+    };
 
-      const data = await response.json();
-      console.log("Upload successful:", data);
-      setUploadStatus('success');
-      alert("Upload successful!");
-    } catch (error) {
-      console.error("Upload failed:", error);
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        setUploadStatus('success');
+        alert('Upload successful!');
+      } else {
+        setUploadStatus('error');
+        alert('Upload failed.');
+      }
+      resetForm();
+    };
+
+    xhr.onerror = () => {
       setUploadStatus('error');
-      alert("Upload failed. Please try again later.");
-    } finally {
-      setTimeout(() => {
-        setResumeFile(null);
-        setJdFile(null);
-        setJdText('');
-        setUploadStatus(null);
-      }, 3000);
-    }
+      alert('Network error. Please try again.');
+      resetForm();
+    };
+
+    setUploadProgress(0);
+    xhr.send(formData);
+  };
+
+  const resetForm = () => {
+    setTimeout(() => {
+      setResumeFile(null);
+      setJdFile(null);
+      setJdText('');
+      setUploadStatus(null);
+      setUploadProgress(0);
+    }, 3000);
   };
 
   return (
@@ -122,8 +100,8 @@ function App() {
         <FileUpload
           id="resume-upload"
           label="Upload Resume"
-          acceptedFormats={['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain']}
-          onFileChange={handleResumeChange}
+          acceptedFormats={acceptedFormats}
+          onFileChange={(file) => handleFileChange('resume', file)}
         />
 
         <div className="upload-section">
@@ -131,8 +109,8 @@ function App() {
           <FileUpload
             id="jd-upload"
             label="Upload Job Description"
-            acceptedFormats={['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain']}
-            onFileChange={handleJdFileChange}
+            acceptedFormats={acceptedFormats}
+            onFileChange={(file) => handleFileChange('jd', file)}
           />
           <div className="separator">or</div>
           <textarea
@@ -145,11 +123,22 @@ function App() {
         </div>
 
         <div className="upload-section center">
-          <button className="upload-btn" onClick={handleSubmit} disabled={uploadStatus === 'success'}>
+          <button
+            className="upload-btn"
+            onClick={handleSubmit}
+            disabled={uploadStatus === 'success'}
+          >
             <FaCloudUploadAlt className="upload-icon-btn" /> {uploadStatus === 'success' ? 'Uploaded!' : 'Submit'}
           </button>
+
           {uploadStatus === 'success' && <FaCheckCircle className="status-icon success" />}
           {uploadStatus === 'error' && <FaTimesCircle className="status-icon error" />}
+
+          {uploadProgress > 0 && uploadProgress < 100 && (
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${uploadProgress}%` }}></div>
+            </div>
+          )}
         </div>
       </div>
     </div>

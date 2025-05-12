@@ -1,76 +1,78 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { FaFileAlt, FaFilePdf, FaFileWord } from 'react-icons/fa';
-import './FileUpload.css'; // Create this CSS file
+import './FileUpload.css';
 
 function FileUpload({ id, label, acceptedFormats, onFileChange }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
   const dragOverlayRef = useRef(null);
+  const MAX_SIZE_MB = 5;
 
-  const handleInputChange = (e) => {
-    const file = e.target.files[0];
-    handleFile(file);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    if (dragOverlayRef.current) {
-      dragOverlayRef.current.classList.add('drag-over');
-    }
-  };
-
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    if (dragOverlayRef.current) {
-      dragOverlayRef.current.classList.remove('drag-over');
-    }
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    if (dragOverlayRef.current) {
-      dragOverlayRef.current.classList.remove('drag-over');
-    }
-    const file = e.dataTransfer.files[0];
-    handleFile(file);
-  };
-
-  const handleFile = (file) => {
-    const MAX_SIZE_MB = 5;
-  
-    if (!file) {
-      setSelectedFile(null);
-      onFileChange(null);
-      return;
-    }
-  
-    if (!acceptedFormats.includes(file.type)) {
-      alert(`Invalid file format. Please upload a file with one of the following formats: ${acceptedFormats.join(', ')}`);
-      resetFileInput();
-      return;
-    }
-  
-    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-      alert(`File size exceeds ${MAX_SIZE_MB}MB. Please upload a smaller file.`);
-      resetFileInput();
-      return;
-    }
-  
-    setSelectedFile(file);
-    onFileChange(file);
-  };
-  
-  const resetFileInput = () => {
+  const resetFile = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = null;
     }
     setSelectedFile(null);
     onFileChange(null);
   };
-  
+
+  const handleFile = (file) => {
+    if (!file) {
+      resetFile();
+      return;
+    }
+
+    if (!acceptedFormats.includes(file.type)) {
+      alert(`Invalid file format. Allowed: ${acceptedFormats.join(', ')}`);
+      resetFile();
+      return;
+    }
+
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      alert(`File size exceeds ${MAX_SIZE_MB}MB.`);
+      resetFile();
+      return;
+    }
+
+    setSelectedFile(file);
+    onFileChange(file);
+  };
+
+  const handleInputChange = (e) => {
+    handleFile(e.target.files[0]);
+  };
 
   const handleClick = () => {
     fileInputRef.current.click();
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    dragOverlayRef.current?.classList.add('drag-over');
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    dragOverlayRef.current?.classList.remove('drag-over');
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    dragOverlayRef.current?.classList.remove('drag-over');
+    handleFile(e.dataTransfer.files[0]);
+  };
+
+  const renderIcon = () => {
+    switch (selectedFile?.type) {
+      case 'application/pdf':
+        return <FaFilePdf className="file-type-icon pdf" />;
+      case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        return <FaFileWord className="file-type-icon docx" />;
+      case 'text/plain':
+        return <FaFileAlt className="file-type-icon txt" />;
+      default:
+        return <FaFileAlt className="file-type-icon" />;
+    }
   };
 
   return (
@@ -83,9 +85,11 @@ function FileUpload({ id, label, acceptedFormats, onFileChange }) {
       <div ref={dragOverlayRef} className="drag-overlay">
         <p>Drop file here</p>
       </div>
+
       <label htmlFor={id} className="file-upload-label" onClick={handleClick}>
-        <FaFileAlt className="file-icon" /> {label} ({acceptedFormats.map(format => format.split('/')[1].toUpperCase()).join(', ')})
+        <FaFileAlt className="file-icon" /> {label} ({acceptedFormats.map(f => f.split('/')[1].toUpperCase()).join(', ')})
       </label>
+
       <input
         id={id}
         type="file"
@@ -94,25 +98,16 @@ function FileUpload({ id, label, acceptedFormats, onFileChange }) {
         className="file-input"
         ref={fileInputRef}
       />
-      {/* {selectedFile && (
-        <div className="file-details">
-          {selectedFile.type === 'application/pdf' && <FaFilePdf className="file-type-icon pdf" />}
-          {selectedFile.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && <FaFileWord className="file-type-icon docx" />}
-          {selectedFile.type === 'text/plain' && <FaFileAlt className="file-type-icon txt" />}
-          <span>{selectedFile.name}</span>
-        </div>
-      )} */}
+
       {selectedFile && (
-    <div className="file-details">
-        {selectedFile.type === 'application/pdf' && <FaFilePdf className="file-type-icon pdf" />}
-        {selectedFile.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && <FaFileWord className="file-type-icon docx" />}
-        {selectedFile.type === 'text/plain' && <FaFileAlt className="file-type-icon txt" />}
-        <div className="file-info">
+        <div className="file-details">
+          {renderIcon()}
+          <div className="file-info">
             <div className="file-name">{selectedFile.name}</div>
             <div className="file-size">{(selectedFile.size / 1024).toFixed(1)} KB</div>
+          </div>
         </div>
-    </div>
-)}
+      )}
     </div>
   );
 }

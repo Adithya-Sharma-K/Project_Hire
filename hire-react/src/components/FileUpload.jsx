@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { FaFileAlt, FaFilePdf, FaFileWord } from 'react-icons/fa';
+import { FaFileAlt, FaFilePdf, FaFileWord, FaTrash } from 'react-icons/fa';
 import './FileUpload.css';
 
 function FileUpload({ id, label, acceptedFormats, onFileChange }) {
@@ -13,14 +13,16 @@ function FileUpload({ id, label, acceptedFormats, onFileChange }) {
       fileInputRef.current.value = null;
     }
     setSelectedFile(null);
-    onFileChange(null);
+    if (typeof onFileChange === 'function') {
+      onFileChange(null);
+    }
   };
 
   const handleFile = (file) => {
     if (!file) return;
 
     if (!acceptedFormats.includes(file.type)) {
-      alert('Invalid file format.');
+      alert(`Invalid file format.`);
       return;
     }
 
@@ -30,20 +32,18 @@ function FileUpload({ id, label, acceptedFormats, onFileChange }) {
     }
 
     setSelectedFile(file);
-    onFileChange(file);
+    if (typeof onFileChange === 'function') {
+      onFileChange(file);
+    }
   };
 
   const handleInputChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       handleFile(file);
-      e.target.value = '';
     }
+    e.target.value = ''; // Reset input so re-uploading same file triggers change
   };
-
-  // const handleClick = () => {
-  //   fileInputRef.current?.click();
-  // };
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -63,7 +63,8 @@ function FileUpload({ id, label, acceptedFormats, onFileChange }) {
   };
 
   const renderIcon = () => {
-    switch (selectedFile?.type) {
+    if (!selectedFile) return null;
+    switch (selectedFile.type) {
       case 'application/pdf':
         return <FaFilePdf className="file-type-icon pdf" />;
       case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
@@ -87,7 +88,7 @@ function FileUpload({ id, label, acceptedFormats, onFileChange }) {
       </div>
 
       <label htmlFor={id} className="file-upload-label">
-        <FaFileAlt className="file-icon" /> {label} 
+        <FaFileAlt className="file-icon" /> {label}
       </label>
 
       <input
@@ -106,6 +107,12 @@ function FileUpload({ id, label, acceptedFormats, onFileChange }) {
             <div className="file-name">{selectedFile.name}</div>
             <div className="file-size">{(selectedFile.size / 1024).toFixed(1)} KB</div>
           </div>
+          <FaTrash
+            className="trash-icon"
+            onClick={resetFile}
+            title="Remove file"
+            aria-label="Remove uploaded file"
+          />
         </div>
       )}
     </div>

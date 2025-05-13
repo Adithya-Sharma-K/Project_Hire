@@ -17,20 +17,15 @@ function FileUpload({ id, label, acceptedFormats, onFileChange }) {
   };
 
   const handleFile = (file) => {
-    if (!file) {
-      resetFile();
-      return;
-    }
+    if (!file) return;
 
     if (!acceptedFormats.includes(file.type)) {
-      alert(`Invalid file format. Allowed: ${acceptedFormats.join(', ')}`);
-      resetFile();
+      alert('Invalid file format.');
       return;
     }
 
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
       alert(`File size exceeds ${MAX_SIZE_MB}MB.`);
-      resetFile();
       return;
     }
 
@@ -39,12 +34,16 @@ function FileUpload({ id, label, acceptedFormats, onFileChange }) {
   };
 
   const handleInputChange = (e) => {
-    handleFile(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      handleFile(file);
+      e.target.value = '';
+    }
   };
 
-  const handleClick = () => {
-    fileInputRef.current.click();
-  };
+  // const handleClick = () => {
+  //   fileInputRef.current?.click();
+  // };
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -59,7 +58,8 @@ function FileUpload({ id, label, acceptedFormats, onFileChange }) {
   const handleDrop = (e) => {
     e.preventDefault();
     dragOverlayRef.current?.classList.remove('drag-over');
-    handleFile(e.dataTransfer.files[0]);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
   };
 
   const renderIcon = () => {
@@ -86,8 +86,8 @@ function FileUpload({ id, label, acceptedFormats, onFileChange }) {
         <p>Drop file here</p>
       </div>
 
-      <label htmlFor={id} className="file-upload-label" onClick={handleClick}>
-        <FaFileAlt className="file-icon" /> {label} ({acceptedFormats.map(f => f.split('/')[1].toUpperCase()).join(', ')})
+      <label htmlFor={id} className="file-upload-label">
+        <FaFileAlt className="file-icon" /> {label} 
       </label>
 
       <input

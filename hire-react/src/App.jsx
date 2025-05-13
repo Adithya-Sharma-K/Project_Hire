@@ -105,7 +105,7 @@ function App() {
         />
 
         <div className="upload-section">
-          <label>📝 Job Description (Choose file OR type below)</label>
+          <label>Job Description (Choose file OR type below)</label>
           <FileUpload
             id="jd-upload"
             label="Upload Job Description"

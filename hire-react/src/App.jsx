@@ -111,6 +111,7 @@ function App() {
             label="Upload Job Description"
             acceptedFormats={acceptedFormats}
             onFileChange={(file) => handleFileChange('jd', file)}
+            disabled={jdText.trim().length > 0}
           />
           <div className="separator">or</div>
           <textarea
@@ -119,6 +120,7 @@ function App() {
             value={jdText}
             onChange={handleJdTextChange}
             className="text-area"
+            disabled={jdFile !== null}
           ></textarea>
         </div>
 

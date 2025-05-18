@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { FaFileAlt, FaFilePdf, FaFileWord, FaTrash } from 'react-icons/fa';
 import './FileUpload.css';
 
-function FileUpload({ id, label, acceptedFormats, onFileChange }) {
+function FileUpload({ id, label, acceptedFormats, onFileChange, disabled }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
   const dragOverlayRef = useRef(null);
@@ -98,6 +98,7 @@ function FileUpload({ id, label, acceptedFormats, onFileChange }) {
         onChange={handleInputChange}
         className="file-input"
         ref={fileInputRef}
+        disabled={disabled}
       />
 
       {selectedFile && (

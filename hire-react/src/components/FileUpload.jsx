@@ -8,6 +8,13 @@ function FileUpload({ id, label, acceptedFormats, onFileChange, disabled }) {
   const dragOverlayRef = useRef(null);
   const MAX_SIZE_MB = 5;
 
+  const handleClick = () => {
+  if (fileInputRef.current && !disabled) {
+    fileInputRef.current.click();
+  }
+};
+
+
   const resetFile = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = null;
@@ -87,7 +94,7 @@ function FileUpload({ id, label, acceptedFormats, onFileChange, disabled }) {
         <p>Drop file here</p>
       </div>
 
-      <label htmlFor={id} className="file-upload-label">
+      <label className="file-upload-label" onClick = {handleClick}>
         <FaFileAlt className="file-icon" /> {label}
       </label>
 

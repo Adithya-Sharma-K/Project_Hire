@@ -86,6 +86,7 @@ function FileUpload({ id, label, acceptedFormats, onFileChange, disabled }) {
   return (
     <div
       className="file-upload-container"
+      onClick = {handleClick}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -94,7 +95,7 @@ function FileUpload({ id, label, acceptedFormats, onFileChange, disabled }) {
         <p>Drop file here</p>
       </div>
 
-      <label className="file-upload-label" onClick = {handleClick}>
+      <label className="file-upload-label">
         <FaFileAlt className="file-icon" /> {label}
       </label>
 
